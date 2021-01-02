@@ -15,22 +15,10 @@ func play() {
 	for {
 		isGameOver, winner := isGameOver(board)
 		if isGameOver {
-			emptyLines(2)
-			fmt.Printf("--== %v won the game ==--\n", winner)
-			emptyLines(2)
-			printBoard(board)
-			emptyLines(2)
-			break
-		} else if len(getEmptySpots(board)) == 0 {
-			emptyLines(2)
-			fmt.Printf("--== TIE ==--\n")
-			emptyLines(2)
-			printBoard(board)
-			emptyLines(2)
+			printResult(winner, board)
 			break
 		} else if turn == "x" {
-			fmt.Printf("Possibilities: %v\n", getEmptySpots(board))
-			board = humanMove(board)
+			board = playerMove(board)
 			turn = "o"
 		} else {
 			board = computerMove(board)
@@ -117,51 +105,8 @@ func computerMove(board [9]string) [9]string {
 	return board
 }
 
-func isGameOver(board [9]string) (bool, string) {
-	if board[0] == board[1] && board[1] == board[2] {
-		if board[0] != " " {
-			return true, board[0]
-		}
-	}
-	if board[3] == board[4] && board[4] == board[5] {
-		if board[3] != " " {
-			return true, board[3]
-		}
-	}
-	if board[6] == board[7] && board[7] == board[8] {
-		if board[6] != " " {
-			return true, board[6]
-		}
-	}
-	if board[0] == board[3] && board[3] == board[6] {
-		if board[0] != " " {
-			return true, board[0]
-		}
-	}
-	if board[1] == board[4] && board[4] == board[7] {
-		if board[1] != " " {
-			return true, board[1]
-		}
-	}
-	if board[2] == board[5] && board[5] == board[8] {
-		if board[2] != " " {
-			return true, board[2]
-		}
-	}
-	if board[0] == board[4] && board[4] == board[8] {
-		if board[0] != " " {
-			return true, board[0]
-		}
-	}
-	if board[6] == board[4] && board[4] == board[2] {
-		if board[6] != " " {
-			return true, board[6]
-		}
-	}
-	return false, " "
-}
-
-func humanMove(board [9]string) [9]string {
+func playerMove(board [9]string) [9]string {
+	fmt.Printf("Possibilities: %v\n", getEmptySpots(board))
 	printBoard(board)
 
 	fmt.Print("where to move? ")
@@ -181,12 +126,68 @@ func humanMove(board [9]string) [9]string {
 	return board
 }
 
+func checkThree(a string, b string, c string) bool {
+	if a == " " || b == " " || c == " " {
+		return false
+	}
+	return a == b && b == c
+}
+
+func isGameOver(board [9]string) (bool, string) {
+	if len(getEmptySpots(board)) == 0 {
+		return true, " "
+	}
+	if checkThree(board[0], board[1], board[2]) {
+		return true, board[0]
+	}
+	if checkThree(board[3], board[4], board[5]) {
+		return true, board[3]
+	}
+	if checkThree(board[6], board[7], board[8]) {
+		return true, board[6]
+	}
+	if checkThree(board[0], board[3], board[6]) {
+		return true, board[0]
+	}
+	if checkThree(board[1], board[4], board[7]) {
+		return true, board[1]
+	}
+	if checkThree(board[2], board[5], board[8]) {
+		return true, board[2]
+	}
+	if checkThree(board[0], board[4], board[8]) {
+		return true, board[0]
+	}
+	if checkThree(board[6], board[4], board[2]) {
+		return true, board[6]
+	}
+	return false, " "
+}
+
 func printBoard(board [9]string) {
 	fmt.Println(board[0] + " | " + board[1] + " | " + board[2])
 	fmt.Println("---------")
 	fmt.Println(board[3] + " | " + board[4] + " | " + board[5])
 	fmt.Println("---------")
 	fmt.Println(board[6] + " | " + board[7] + " | " + board[8])
+}
+
+func printResult(winner string, board [9]string) {
+	printEmptyLines(2)
+	if winner == " " {
+		fmt.Printf("--== TIE ==--\n")
+	} else {
+		fmt.Printf("--== %v won the game ==--\n", winner)
+	}
+	printEmptyLines(2)
+	printBoard(board)
+	printEmptyLines(2)
+}
+
+func printEmptyLines(num int) {
+	for i := 0; i < num; i++ {
+		fmt.Println()
+	}
 }
 
 func min(values []int) int {
@@ -207,10 +208,4 @@ func max(values []int) int {
 		}
 	}
 	return max
-}
-
-func emptyLines(num int) {
-	for i := 0; i < num; i++ {
-		fmt.Println()
-	}
 }
