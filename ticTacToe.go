@@ -51,9 +51,9 @@ func minimax(board [9]string, depth int, isMaximizingPlayer bool) int {
 		return evaluate(board)
 	}
 
+	var currentBoard [9]string
 	if isMaximizingPlayer {
 		maxEval := -1
-		currentBoard := board
 		for _, item := range getEmptySpots(board) {
 			currentBoard = board
 			currentBoard[item] = "x"
@@ -61,17 +61,16 @@ func minimax(board [9]string, depth int, isMaximizingPlayer bool) int {
 			maxEval = max([]int{maxEval, eval})
 		}
 		return maxEval
-	} else {
-		minEval := 1
-		currentBoard := board
-		for _, item := range getEmptySpots(board) {
-			currentBoard = board
-			currentBoard[item] = "o"
-			eval := minimax(currentBoard, depth-1, true)
-			minEval = min([]int{minEval, eval})
-		}
-		return minEval
 	}
+
+	minEval := 1
+	for _, item := range getEmptySpots(board) {
+		currentBoard = board
+		currentBoard[item] = "o"
+		eval := minimax(currentBoard, depth-1, true)
+		minEval = min([]int{minEval, eval})
+	}
+	return minEval
 }
 
 func evaluate(board [9]string) int {
@@ -94,7 +93,6 @@ func getEmptySpots(board [9]string) []int {
 			result = append(result, index)
 		}
 	}
-
 	return result
 }
 
